@@ -29,5 +29,4 @@ const restaurant = new mongoose.Schema({
 
 });
 
-
 mongoose.model("Restaurants",restaurant);
