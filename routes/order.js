@@ -1,7 +1,6 @@
 const express =  require('express');
 const mongoose = require("mongoose")
 const Restaurant = mongoose.model('Restaurants');
-
 const router = express.Router();
 const Logincheck = require("../Middleware/Loginchecck")
 // var http = require('http').Server;

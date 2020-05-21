@@ -1,7 +1,7 @@
 const jwt =require('jsonwebtoken')
 const {JWT_SECRET} = require('../Keys')
 const mongoose = require('mongoose');
-const User = mongoose.model('User');
+const Restaurants = mongoose.model('Restaurants');
 
 module.exports = (req,res,next)=>{
     const {authorization} = req.headers
@@ -14,9 +14,9 @@ module.exports = (req,res,next)=>{
             return  res.status(401).json({err:"you must be logged in"})
         }
         const {_id} = payload
-        Restaurant.findById(_id)
-            .then(userdata=>{
-                req.user = userdata
+        Restaurants.findById(_id)
+            .then(restdata=>{
+                req.restaurant = restdata
                 next()
             })
 

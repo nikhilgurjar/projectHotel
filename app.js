@@ -11,6 +11,8 @@ var server = http.createServer(app);
 require('./Models/Restaurant')
 require('./Models/User')
 require('./Models/Order')
+require('./Models/Menu')
+
 mongoose.connect(URL,{
     useNewUrlParser:true,
     useUnifiedTopology:true

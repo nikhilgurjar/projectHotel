@@ -1,5 +1,6 @@
 
 const mongoose = require('mongoose');
+const {ObjectId} = mongoose.Schema.Types
 
 const restaurant = new mongoose.Schema({
     name:{
@@ -25,7 +26,14 @@ const restaurant = new mongoose.Schema({
     password:{
         type:String,
         required:true
-    }
+    },
+    menu:[
+        {
+            type:ObjectId,
+            ref:"Menu"
+        }
+    ]
+
 
 });
 

@@ -1,13 +1,14 @@
 const express =  require('express');
 const mongoose = require("mongoose")
-
+const Logincheck = require("../Middleware/Loginchecck")
+const Restaurants = mongoose.model("Restaurants");
 const router = express.Router();
 const Restaurant = mongoose.model('Restaurants');
 const User = mongoose.model('User');
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const {JWT_SECRET} = require('../Keys')
-
+const Menu = mongoose.model("Menu")
 router.post('/usersignup',(req,res)=>{
   const {name,email,phone,restaurantname,table}=req.body
   console.log(req.body)
@@ -28,7 +29,8 @@ router.post('/usersignup',(req,res)=>{
                   })
                   user.save()
                       .then(user=>{
-
+                          console.log(user)
+                          return res.status(200).json({restaurantid:restaurant._id,user})
                       })
               }
               const {name,phone,restaurantname,table} = req.body;
@@ -107,7 +109,68 @@ router.post('/signin',(req,res)=>{
 
         })
 })
+router.post('/addmenu',Logincheck,(req,res)=>{
+    const {menu} = req.body;
+    Menu.find({
+        $and:[
+            {byrestaurant:req.restaurant._id},
+            {name:menu.name}
+        ]
+    })
+        .then((restmenu)=>{
+          if(!restmenu){
+              const newmenu = new Menu({
+                  name:menu.name,
+                  price:menu.price,
+                  byrestaurant:req.restaurant._id
+              })
+              newmenu.save()
+                  .then((result)=>{
+                      res.status(200).json({message:"succesfully added menu"})
+                  })
+                  .catch((err)=>{
+                      console.log(err)
+                      return res.status(422).json({err:err})
+                  })
+          }
+            restmenu.update(
+                { name:menu.name },
+                { $set:
+                        {
+                            name:menu.name,
+                            price: menu.price ,
+                        }
+                }
+            )
+             })
 
+
+
+
+})
+router.put('/deletemenu',Logincheck,(req,res)=>{
+   Restaurant.findByIdAndUpdate(req.restaurant._id,{
+       $pull:{menu:req.body.menuid}
+   })
+       .then((result)=>{
+           console.log(result)
+           return res.status(200).json({message:"deleted succesfully"})
+       })
+       .catch((err)=>{
+           console.log(err)
+           return res.status(422).json({err:err})
+       })
+})
+router.get('/allmenu',(req,res)=>{
+    Menu.find({byrestaurant:req.body.restaurantid})
+        .then(result=>{
+            if(!result){
+                return res.status(422).json({message:"no menu found with this restaurant"})
+            }
+            console.log(result)
+            return res.status(200).json({menu:result})
+        })
+})
 module.exports = router;
 
 
